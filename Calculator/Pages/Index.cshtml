@@ -1,0 +1,335 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Welcome to the universal calculator";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<link rel="stylesheet" href="~/css/styles.css">
+
+<div id="header">
+    <h3>Select an Option:</h3>
+    <button onclick="toggleTab('graph')">Graph Plotter</button>
+    <button onclick="toggleTab('calculator')">Calculator</button>
+    <button onclick="toggleTab('equationSolver')">Equation Solver</button>
+    <button onclick="toggleTab('unitConverter')">Unit Converter</button>
+    <button onclick="toggleTab('matrixCalculator')">Matrix Calculator</button>
+    <button onclick="toggleTab('programmingMode')">Programming Mode</button>
+    <button onclick="toggleTab('statisticalFunctions')">Statistical Functions</button>
+    <button onclick="toggleTab('complexCalculator')">Сomplex Calculator</button>
+    <button onclick="toggleTab('customFunctions')">Сustom Functions</button>
+    <button onclick="toggleTab('historyTab')">History</button>
+    <button onclick="toggleTab('settings')">Settings</button>
+</div>
+
+
+<div id="content">
+    <div id="graph" style="display: none;">
+        <label for="mathExpression">Enter Math Expression:</label>
+        <input type="text" id="mathExpression" />
+        <button onclick="plotGraph()">Plot Graph</button>
+        <div id="plot"></div>
+    </div>
+
+    <div id="calculator" style="display: none;">
+        <label for="expression">Enter Expression:</label>
+        <output id="calculatorResult"></output>
+        <input type="text" id="expression" />
+
+        <div class="keypad">
+            <button onclick="appendToExpression('1')">1</button>
+            <button onclick="appendToExpression('2')">2</button>
+            <button onclick="appendToExpression('3')">3</button>
+            <button onclick="appendToExpression('+')">+</button>
+            <button onclick="appendToExpression('4')">4</button>
+            <button onclick="appendToExpression('5')">5</button>
+            <button onclick="appendToExpression('6')">6</button>
+            <button onclick="appendToExpression('-')">-</button>
+            <button onclick="appendToExpression('7')">7</button>
+            <button onclick="appendToExpression('8')">8</button>
+            <button onclick="appendToExpression('9')">9</button>
+            <button onclick="appendToExpression('*')">x</button>
+            <button onclick="appendToExpression('.')">.</button>
+            <button onclick="appendToExpression('0')">0</button>
+            <button onclick="appendToExpression('/')">/</button>
+            <button onclick="appendToExpression('(')">(</button>
+            <button onclick="appendToExpression(')')">)</button>
+            <button onclick="calculate()">=</button>
+        </div>
+
+        <div class="keypad">
+            <button onclick="appendToExpression('sin(')">sin</button>
+            <button onclick="appendToExpression('cos(')">cos</button>
+            <button onclick="appendToExpression('tan(')">tan</button>
+            <button onclick="appendToExpression('log(')">log</button>
+        </div>
+    </div>
+
+    <div id="equationSolver" style="display: none;">
+        <div>
+            <label for="a">Enter coefficient a:</label>
+            <input type="number" id="a" step="any">
+        </div>
+        <div>
+            <label for="b">Enter coefficient b:</label>
+            <input type="number" id="b" step="any">
+        </div>
+
+        <div style="display: flex; align-items: center;">
+            <label for="includeC">Include coefficient c (for quadratic equation)</label>
+            <input type="checkbox" id="includeC" onchange="toggleThirdField()" class="checkbox-inline">
+        </div>
+
+        <div id="cField" style="display: none;">
+            <label for="c">Enter coefficient c:</label>
+            <input type="number" id="c" step="any">
+        </div>
+        <button onclick="solveEquation()">Solve Equation</button>
+        <div id="result"></div>
+        <div id="steps"></div>
+    </div>
+
+    <div id="unitConverter" style="display: none;">
+        <label for="unitInput">Enter the value:</label>
+        <input type="number" id="unitInput" />
+        <select id="inputUnit" onchange="updateOutputUnits()">
+            <optgroup label="Length">
+                <option value="meter">Meter</option>
+                <option value="centimeter">Centimeter</option>
+                <option value="millimeter">Millimeter</option>
+            </optgroup>
+            <optgroup label="Mass">
+                <option value="kilogram">Kilogram</option>
+                <option value="gram">Gram</option>
+                <option value="milligram">Milligram</option>
+                <option value="ton">Ton</option>
+            </optgroup>
+            <optgroup label="Area">
+                <option value="squareMeter">Square Meter</option>
+                <option value="squareCentimeter">Square Centimeter</option>
+                <option value="hectare">Hectare</option>
+            </optgroup>
+            <optgroup label="Time">
+                <option value="second">Second</option>
+                <option value="minute">Minute</option>
+                <option value="hour">Hour</option>
+            </optgroup>
+            <optgroup label="Size">
+                <option value="cubicMeter">Cubic Meter</option>
+                <option value="liter">Liter</option>
+                <option value="milliliter">Milliliter</option>
+            </optgroup>
+        </select>
+        <label for="outputUnit">Output unit:</label>
+        <select id="outputUnit"></select>
+        <button onclick="convertUnits()">Convert</button>
+        <div id="conversionResult"></div>
+    </div>
+
+    <div id="matrixCalculator" style="display: none;">
+        <div>
+            <label for="matrixA">Enter Matrix A:</label>
+            <textarea id="matrixA" rows="3" cols="30"></textarea>
+        </div>
+        <div id="matrixBInput">
+            <label for="matrixB">Enter Matrix B:</label>
+            <textarea id="matrixB" rows="3" cols="30"></textarea>
+        </div>
+        <div>
+            <label for="operationType">Operation:</label>
+            <select id="operationType" onchange="toggleMatrixBInput()">
+                <option value="add">Add</option>
+                <option value="subtract">Subtract</option>
+                <option value="multiply">Multiply</option>
+                <option value="determinant">Calculate Determinant</option>
+                <option value="inverse">Calculate Inverse</option>
+            </select>
+        </div>
+        <button onclick="performMatrixOperation()">Calculate</button>
+        <div id="matrixResult"></div>
+    </div>
+
+
+
+
+    <div id="programmingMode">
+        <button onclick="showConversionInterface()">Conversion Interface</button>
+        <button onclick="showOperationInterface()">Operation Interface</button>
+
+        <div id="conversionInterface" style="display: none;">
+            <div>
+                <label for="inputValue">Input Value:</label>
+                <input type="text" id="inputValue">
+            </div>
+            <div>
+                <label for="inputFormat">Input Format:</label>
+                <select id="inputFormat">
+                    <option value="decimal">Decimal</option>
+                    <option value="binary">Binary</option>
+                    <option value="octal">Octal</option>
+                    <option value="hexadecimal">Hexadecimal</option>
+                </select>
+            </div>
+            <button onclick="convertAndDisplay()">Convert & Display</button>
+            <br><br>
+            <div>
+                <label for="decimalResult">Decimal:</label>
+                <input type="text" id="decimalResult" readonly>
+            </div>
+            <div>
+                <label for="binaryResult">Binary:</label>
+                <input type="text" id="binaryResult" readonly>
+            </div>
+            <div>
+                <label for="octalResult">Octal:</label>
+                <input type="text" id="octalResult" readonly>
+            </div>
+            <div>
+                <label for="hexadecimalResult">Hexadecimal:</label>
+                <input type="text" id="hexadecimalResult" readonly>
+            </div>
+        </div>
+
+        <div id="operationInterface" style="display: none;">
+            <div>
+                <label for="inputValue">First Value:</label>
+                <input type="text" id="inputValue">
+            </div>
+            <div>
+                <label for="inputFormat">Input Format:</label>
+                <select id="inputFormat">
+                    <option value="decimal">Decimal</option>
+                    <option value="binary">Binary</option>
+                    <option value="octal">Octal</option>
+                    <option value="hexadecimal">Hexadecimal</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputValue2">Second Value:</label>
+                <input type="text" id="inputValue2">
+            </div>
+            <div>
+                <label for="operation">Operation:</label>
+                <select id="operation">
+                    <option value="and">AND</option>
+                    <option value="or">OR</option>
+                    <option value="xor">XOR</option>
+                    <option value="not">NOT</option>
+                </select>
+            </div>
+            <button onclick="performOperation()">Perform Task</button>
+            <br><br>
+            <div>
+                <label for="outputValue">Output Value:</label>
+                <input type="text" id="outputValue" readonly>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="statisticalFunctions" style="display: none;">
+        <div>
+            <label for="datasetInput">Enter Dataset:</label>
+            <textarea id="datasetInput" rows="3" cols="30"></textarea>
+        </div>
+        <button onclick="calculateMean()">Calculate Mean</button>
+        <button onclick="calculateMedian()">Calculate Median</button>
+        <button onclick="calculateMode()">Calculate Mode</button>
+        <button onclick="calculateStandardDeviation()">Calculate Standard Deviation</button>
+        <button onclick="calculateVariance()">Calculate Variance</button>
+        <div id="statisticalResult"></div>
+    </div>
+
+    <div id="complexCalculator" style="display: none;">
+        <label for="realPart1">Real Part 1:</label>
+        <input type="number" id="realPart1" />
+        <label for="imaginaryPart1">Imaginary Part 1:</label>
+        <input type="number" id="imaginaryPart1" />
+        <br>
+        <label for="realPart2">Real Part 2:</label>
+        <input type="number" id="realPart2" />
+        <label for="imaginaryPart2">Imaginary Part 2:</label>
+        <input type="number" id="imaginaryPart2" />
+        <br>
+        <button onclick="addComplexNumbers()">Add</button>
+        <button onclick="subtractComplexNumbers()">Subtract</button>
+        <button onclick="multiplyComplexNumbers()">Multiply</button>
+        <button onclick="divideComplexNumbers()">Divide</button>
+        <div id="complexResult"></div>
+    </div>
+
+    <div id="customFunctions" style="display: none;">
+        <h3>Custom Functions</h3>
+        <label for="customFunctionName">Function Name:</label>
+        <input type="text" id="customFunctionName">
+        <label for="customFunctionExpression">Function Expression:</label>
+        <input type="text" id="customFunctionExpression">
+        <button onclick="addCustomFunction()">Add Function</button>
+        <h4>Custom Constants</h4>
+        <label for="customConstantName">Constant Name:</label>
+        <input type="text" id="customConstantName">
+        <label for="customConstantValue">Constant Value:</label>
+        <input type="text" id="customConstantValue">
+        <button onclick="addCustomConstant()">Add Constant</button>
+        <h4>Manage Custom Functions and Constants</h4>
+        <div>
+            <button onclick="clearCustomFunctionsAndConstants()">Clear All Functions and Constants</button>
+            <button onclick="removeLastCustomFunction()">Remove Last Custom Function</button>
+            <button onclick="removeLastCustomConstant()">Remove Last Custom Constant</button>
+        </div>
+        <div>
+            <h3>Custom Functions List</h3>
+            <ul id="customFunctionsList"></ul>
+        </div>
+        <div>
+            <h3>Custom Constants List</h3>
+            <ul id="customConstantsList"></ul>
+        </div>
+
+    </div>
+
+
+    <div id="historyTab" style="display: none;">
+        <h3>History Log</h3>
+        <ul id="historyList"></ul>
+        <h3>Complex Operations Log</h3>
+        <ul id="complexList"></ul>
+        <button onclick="clearHistory()">Clear History</button>
+        <button onclick="exportHistory()">Export History</button>
+        <input type="file" id="importFile" accept=".json" onchange="importHistory(event)" />
+        <button onclick="backupData()">Backup Data</button>
+        <button onclick="loadBackup()">Load Backup</button>
+    </div>
+
+
+    <div id="settings" style="display: none;">
+        <h3>Settings</h3>
+        <script src="Settings.js"></script>
+        <div id="precisionControl">
+            <label for="displayPrecision">Calculator Precision:</label>
+            <input type="number" id="displayPrecision" min="0" max="15" step="1" value="0">
+            <button onclick="setDisplayPrecision()">Set Precision</button>
+        </div>
+    </div>
+
+
+</div>
+
+@section Scripts {
+    <script src="~/js/OutputTabs.js"></script>
+    <script src="~/js/Settings.js"></script>
+    <script src="~/js/History.js"></script>
+    <script src="~/js/CustomFunc.js"></script>
+    <script src="~/js/Complex.js"></script>
+    <script src="~/js/StatisticalFunctions.js"></script>
+    <script src="~/js/Programming.js"></script>
+    <script src="~/js/Converter.js"></script>
+    <script src="~/js/MatrixCalc.js"></script>
+    <script src="~/js/Calculator.js"></script>
+    <script src="~/js/Equation.js"></script>
+    <script src="~/js/Graph.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs-expression-parser@2.0.3/dist/mathjs-expression-parser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.6.0/math.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+}
